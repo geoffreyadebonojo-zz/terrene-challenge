@@ -1,7 +1,9 @@
 # config/routes.rb
 Rails.application.routes.draw do
-  resources :todos do
-    resources :items
+  namespace :v1 do
+    resources :todos do
+      resources :items
+    end
   end
 
   post 'auth/login', to: 'authentication#authenticate'
