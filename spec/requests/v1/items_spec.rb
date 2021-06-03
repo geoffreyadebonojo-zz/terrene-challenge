@@ -51,6 +51,22 @@ RSpec.describe 'Items API', type: :request do
         expect(json.size).to eq(5)
       end
 
+      # These edge cases kinda weird me out, need more visibility into business logic
+      it 'can handle nil page number by returning first page' do
+        get "/v1/todos/#{todo_id}/items", params: {results_per_page: 5}, headers: headers
+        expect(json.size).to eq(5)
+      end
+
+      it 'can handle nil results_per_page number by returning all items' do
+        get "/v1/todos/#{todo_id}/items", params: {page: 1}, headers: headers
+        expect(json.size).to eq(20)
+      end
+
+      it 'can handle nil results_per_page number with page > 1 by returning no items' do
+        get "/v1/todos/#{todo_id}/items", params: {page: 2}, headers: headers
+        expect(json.size).to eq(0)
+      end
+
       it 'returns correct page of items' do
         first_page = json
 
