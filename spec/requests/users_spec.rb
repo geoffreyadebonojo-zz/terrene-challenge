@@ -39,4 +39,35 @@ RSpec.describe 'Users API', type: :request do
       end
     end
   end
+
+  describe 'GET /user' do
+    context 'when valid request' do
+
+      it 'returns user data' do
+        post '/signup', params: valid_attributes.to_json, headers: headers
+        auth_headers = {
+          'Authorization': json["auth_token"],
+          'Content-type': 'application/json'
+        }
+        get '/user', headers: auth_headers
+
+        expect(response).to have_http_status(200)
+        expect(json["name"]).to eq(valid_attributes[:name])
+        expect(json["email"]).to eq(valid_attributes[:email])
+      end
+    end
+
+    context 'when invalid request without token' do
+      before { get '/user', params: {}, headers: headers }
+
+      it 'does not create a new user' do
+        expect(response).to have_http_status(422)
+      end
+
+      it 'returns failure message' do
+        expect(json['message'])
+          .to match(/Missing token/)
+      end
+    end
+  end
 end
